@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Calculateur Napolitaine</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans p-4 max-w-md mx-auto">
+
+  <h1 class="text-2xl font-bold text-center my-4">Pâte Napolitaine</h1>
+
+  <div class="bg-white rounded-2xl p-5 shadow-sm space-y-4 mb-6">
+    <div>
+      <label class="block text-sm font-medium text-slate-600">Nombre de pâtons</label>
+      <input type="number" id="patons" value="4" class="w-full mt-1 p-2 border rounded-lg text-lg font-semibold text-center" oninput="calculer()">
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-slate-600">Poids par pâton (g)</label>
+      <input type="number" id="poids" value="250" class="w-full mt-1 p-2 border rounded-lg text-lg font-semibold text-center" oninput="calculer()">
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-slate-600">Hydratation (%)</label>
+      <input type="number" id="hydratation" value="65" class="w-full mt-1 p-2 border rounded-lg text-lg font-semibold text-center" oninput="calculer()">
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-slate-600">Type de levure</label>
+      <select id="type-levure" class="w-full mt-1 p-2 border rounded-lg text-lg font-semibold text-center bg-white" onchange="calculer()">
+        <option value="fraiche" selected>Fraîche (pressée)</option>
+        <option value="seche_active">Sèche active</option>
+        <option value="instantanee">Sèche instantanée</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="bg-blue-600 text-white rounded-2xl p-5 shadow-md space-y-3">
+    <div class="flex justify-between items-center border-b border-blue-400 pb-2">
+      <h2 class="text-lg font-bold">Recette</h2>
+      <span class="text-xs bg-blue-700 px-2 py-1 rounded text-blue-100">Sel fixée : 3%</span>
+    </div>
+    <div class="flex justify-between text-lg"><span>Farine :</span><span id="res-farine" class="font-bold">0 g</span></div>
+    <div class="flex justify-between text-lg"><span>Eau :</span><span id="res-eau" class="font-bold">0 g</span></div>
+    <div class="flex justify-between text-lg"><span>Sel :</span><span id="res-sel" class="font-bold">0 g</span></div>
+    <div class="flex justify-between text-lg"><span id="label-levure">Levure :</span><span id="res-levure" class="font-bold">0 g</span></div>
+  </div>
+
+  <script>
+    function calculer() {
+      const n = parseFloat(document.getElementById('patons').value) || 0;
+      const p = parseFloat(document.getElementById('poids').value) || 0;
+      const h = (parseFloat(document.getElementById('hydratation').value) || 0) / 100;
+      
+      // Valeurs fixes pour le profil Napolitain
+      const s = 0.03; // Sel à 3%
+      const lFraicheTaux = 0.002; // Levure fraîche de référence à 0.2%
+
+      const typeLevure = document.getElementById('type-levure').value;
+
+      let ratio = 1.0;
+      let label = "Levure fraîche :";
+
+      if (typeLevure === "seche_active") {
+        ratio = 0.5;
+        label = "Levure sèche active :";
+      } else if (typeLevure === "instantanee") {
+        ratio = 0.33;
+        label = "Levure instantanée :";
+      }
+
+      const lEffectifTaux = lFraicheTaux * ratio;
+
+      const masseTotale = n * p;
+      const farine = masseTotale / (1 + h + s + lEffectifTaux);
+      const eau = farine * h;
+      const sel = farine * s;
+      const levure = farine * lEffectifTaux;
+
+      document.getElementById('res-farine').innerText = Math.round(farine) + " g";
+      document.getElementById('res-eau').innerText = Math.round(eau) + " g";
+      document.getElementById('res-sel').innerText = sel.toFixed(1) + " g";
+      document.getElementById('label-levure').innerText = label;
+      document.getElementById('res-levure').innerText = levure.toFixed(2) + " g";
+    }
+    calculer();
+  </script>
+</body>
+</html>
