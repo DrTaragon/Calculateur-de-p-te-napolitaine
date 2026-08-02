@@ -6,6 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   
+  <!-- Désactivation du cache -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
@@ -13,82 +14,197 @@
   <title>Calculateur de pâte à pizza</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-100 text-slate-800 font-sans p-4 max-w-md mx-auto">
+<body class="bg-slate-100 text-slate-800 font-sans p-4 max-w-md mx-auto mb-12">
 
   <h1 class="text-2xl font-bold text-center my-4">Calculateur de pâte à pizza</h1>
 
-  <div class="bg-white rounded-2xl p-5 shadow-sm space-y-4 mb-6">
-    <div>
-      <label class="block text-sm font-medium text-slate-600">Nombre de pizzas</label>
-      <input type="number" id="patons" value="4" class="w-full mt-1 p-2 border rounded-lg text-lg font-semibold text-center" oninput="calculer()">
-    </div>
+  <!-- Navigation par Onglets -->
+  <div class="flex bg-slate-200 p-1 rounded-xl mb-6">
+    <button id="tab-calc-btn" onclick="switchTab('calc')" class="flex-1 py-2 text-sm font-semibold rounded-lg bg-white shadow-sm text-slate-800">
+      🧮 Calculateur
+    </button>
+    <button id="tab-recipes-btn" onclick="switchTab('recipes')" class="flex-1 py-2 text-sm font-semibold rounded-lg text-slate-600 hover:text-slate-800">
+      📖 Recettes & Guides
+    </button>
+  </div>
 
-    <div>
-      <label class="block text-sm font-medium text-slate-600">Taille de la pizza</label>
-      <select id="taille-pizz" class="w-full mt-1 p-2 border rounded-lg text-lg font-semibold text-center bg-white" onchange="calculer()">
-        <option value="200">Petite — 10"</option>
-        <option value="250" selected>Moyenne — 12"</option>
-        <option value="320">Grande — 14"</option>
-      </select>
-    </div>
-
-    <div>
-      <label class="block text-sm font-medium text-slate-600">Style de croûte / Épaisseur</label>
-      <select id="epaisseur" class="w-full mt-1 p-2 border rounded-lg text-lg font-semibold text-center bg-white" onchange="calculer()">
-        <option value="0.90">Mince (-10%)</option>
-        <option value="1.00" selected>Standard (Napolitaine)</option>
-        <option value="1.15">Épaisse / Généreuse (+15%)</option>
-      </select>
-    </div>
-
-    <div>
-      <label class="block text-sm font-medium text-slate-600">Ajustement perso (g par pâton)</label>
-      <input type="number" id="ajustement" value="0" step="5" class="w-full mt-1 p-2 border rounded-lg text-lg font-semibold text-center" oninput="calculer()">
-    </div>
-
-    <!-- Section Hydratation Guidée -->
-    <div>
-      <div class="flex justify-between items-center">
-        <label class="block text-sm font-medium text-slate-600">Hydratation (%)</label>
-        <span id="hydra-badge" class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded font-medium">Standard</span>
-      </div>
-      
-      <input type="number" id="hydratation" value="65" min="50" max="90" class="w-full mt-1 p-2 border rounded-lg text-lg font-semibold text-center" oninput="calculer()">
-
-      <!-- Boutons de sélection rapide -->
-      <div class="grid grid-cols-4 gap-2 mt-2">
-        <button type="button" onclick="setHydra(60)" class="py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg border">60%</button>
-        <button type="button" onclick="setHydra(65)" class="py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg border">65%</button>
-        <button type="button" onclick="setHydra(70)" class="py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg border">70%</button>
-        <button type="button" onclick="setHydra(75)" class="py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg border">75%</button>
+  <!-- ONGLET 1 : CALCULATEUR -->
+  <div id="tab-calc" class="space-y-6">
+    <div class="bg-white rounded-2xl p-5 shadow-sm space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-slate-600">Nombre de pizzas</label>
+        <input type="number" id="patons" value="4" class="w-full mt-1 p-2 border rounded-lg text-lg font-semibold text-center" oninput="calculer()">
       </div>
 
-      <!-- Description explicative dynamique -->
-      <p id="hydra-guide" class="text-xs text-slate-500 mt-2 bg-slate-50 p-2.5 rounded-lg border border-slate-100 leading-relaxed"></p>
+      <div>
+        <label class="block text-sm font-medium text-slate-600">Taille de la pizza</label>
+        <select id="taille-pizz" class="w-full mt-1 p-2 border rounded-lg text-lg font-semibold text-center bg-white" onchange="calculer()">
+          <option value="200">Petite — 10"</option>
+          <option value="250" selected>Moyenne — 12"</option>
+          <option value="320">Grande — 14"</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-slate-600">Style de croûte / Épaisseur</label>
+        <select id="epaisseur" class="w-full mt-1 p-2 border rounded-lg text-lg font-semibold text-center bg-white" onchange="calculer()">
+          <option value="0.90">Mince (-10%)</option>
+          <option value="1.00" selected>Standard (Napolitaine)</option>
+          <option value="1.15">Épaisse / Généreuse (+15%)</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-slate-600">Ajustement perso (g par pâton)</label>
+        <input type="number" id="ajustement" value="0" step="5" class="w-full mt-1 p-2 border rounded-lg text-lg font-semibold text-center" oninput="calculer()">
+      </div>
+
+      <!-- Hydratation -->
+      <div>
+        <div class="flex justify-between items-center">
+          <label class="block text-sm font-medium text-slate-600">Hydratation (%)</label>
+          <span id="hydra-badge" class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded font-medium">Standard</span>
+        </div>
+        
+        <input type="number" id="hydratation" value="65" min="50" max="90" class="w-full mt-1 p-2 border rounded-lg text-lg font-semibold text-center" oninput="calculer()">
+
+        <div class="grid grid-cols-4 gap-2 mt-2">
+          <button type="button" onclick="setHydra(60)" class="py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg border">60%</button>
+          <button type="button" onclick="setHydra(65)" class="py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg border">65%</button>
+          <button type="button" onclick="setHydra(70)" class="py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg border">70%</button>
+          <button type="button" onclick="setHydra(75)" class="py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg border">75%</button>
+        </div>
+
+        <p id="hydra-guide" class="text-xs text-slate-500 mt-2 bg-slate-50 p-2.5 rounded-lg border border-slate-100 leading-relaxed"></p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-slate-600">Type de levure</label>
+        <select id="type-levure" class="w-full mt-1 p-2 border rounded-lg text-lg font-semibold text-center bg-white" onchange="calculer()">
+          <option value="fraiche" selected>Fraîche (pressée)</option>
+          <option value="seche_active">Sèche active</option>
+          <option value="instantanee">Sèche instantanée</option>
+        </select>
+      </div>
     </div>
 
-    <div>
-      <label class="block text-sm font-medium text-slate-600">Type de levure</label>
-      <select id="type-levure" class="w-full mt-1 p-2 border rounded-lg text-lg font-semibold text-center bg-white" onchange="calculer()">
-        <option value="fraiche" selected>Fraîche (pressée)</option>
-        <option value="seche_active">Sèche active</option>
-        <option value="instantanee">Sèche instantanée</option>
-      </select>
+    <div class="bg-blue-600 text-white rounded-2xl p-5 shadow-md space-y-3">
+      <div class="flex justify-between items-center border-b border-blue-400 pb-2">
+        <h2 class="text-lg font-bold">Recette</h2>
+        <span id="poids-final-paton" class="text-xs bg-blue-700 px-2 py-1 rounded text-blue-100">Pâton : 250 g</span>
+      </div>
+      <div class="flex justify-between text-lg"><span>Farine :</span><span id="res-farine" class="font-bold">0 g</span></div>
+      <div class="flex justify-between text-lg"><span>Eau :</span><span id="res-eau" class="font-bold">0 g</span></div>
+      <div class="flex justify-between text-lg"><span>Sel (3%) :</span><span id="res-sel" class="font-bold">0 g</span></div>
+      <div class="flex justify-between text-lg"><span id="label-levure">Levure :</span><span id="res-levure" class="font-bold">0 g</span></div>
     </div>
   </div>
 
-  <div class="bg-blue-600 text-white rounded-2xl p-5 shadow-md space-y-3">
-    <div class="flex justify-between items-center border-b border-blue-400 pb-2">
-      <h2 class="text-lg font-bold">Recette</h2>
-      <span id="poids-final-paton" class="text-xs bg-blue-700 px-2 py-1 rounded text-blue-100">Pâton : 250 g</span>
+  <!-- ONGLET 2 : RECETTES & GUIDES -->
+  <div id="tab-recipes" class="space-y-6 hidden">
+    
+    <!-- Étapes de fabrication de la pâte -->
+    <div class="bg-white rounded-2xl p-5 shadow-sm space-y-3">
+      <h2 class="text-xl font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
+        🥣 Fabrication de la Pâte
+      </h2>
+      <ol class="list-decimal list-inside text-sm text-slate-600 space-y-2 leading-relaxed">
+        <li><b>Préparer les liquides :</b> Dissolvez la levure dans l'eau.</li>
+        <li><b>Préparer les secs :</b> Pré-mélangez le sel et la farine séparément dans un grand récipient.</li>
+        <li><b>Mélanger :</b> Ajoutez le mélange eau/levure graduellement dans le mélange de farine et sel.</li>
+        <li><b>Pétrir :</b> Pétrissez 10 à 15 min jusqu'à obtenir une pâte lisse, homogène et élastique.</li>
+        <li><b>Pointage :</b> Laissez reposer la masse couverte 2 h à température ambiante.</li>
+        <li><b>Boulage :</b> Divisez la pâte en pâtons uniformes et façonnez des boules bien fermées.</li>
+        <li><b>Fermentation :</b> Placez dans un bac hermétique 8 h à 24 h (à température ambiante ou au frais).</li>
+      </ol>
     </div>
-    <div class="flex justify-between text-lg"><span>Farine :</span><span id="res-farine" class="font-bold">0 g</span></div>
-    <div class="flex justify-between text-lg"><span>Eau :</span><span id="res-eau" class="font-bold">0 g</span></div>
-    <div class="flex justify-between text-lg"><span>Sel (3%) :</span><span id="res-sel" class="font-bold">0 g</span></div>
-    <div class="flex justify-between text-lg"><span id="label-levure">Levure :</span><span id="res-levure" class="font-bold">0 g</span></div>
+
+    <!-- Sauce Tomate -->
+    <div class="bg-white rounded-2xl p-5 shadow-sm space-y-3">
+      <h2 class="text-xl font-bold text-red-600 border-b pb-2 flex items-center gap-2">
+        🍅 Sauce Tomate Napolitaine
+      </h2>
+      <p class="text-xs text-slate-500">Sans cuisson préalable pour préserver la fraîcheur du fruit.</p>
+      <ul class="list-disc list-inside text-sm text-slate-600 space-y-1">
+        <li>1 boîte (400 g) de tomates pelées San Marzano</li>
+        <li>1 gousse d'ail finement pressée ou hachée</li>
+        <li>4 g de sel (environ 1 c. à café)</li>
+        <li>3–4 feuilles de basilic frais</li>
+        <li>1 c. à soupe d'huile d'olive extra vierge</li>
+      </ul>
+      <p class="text-xs text-slate-500 italic mt-2">
+        <b>Préparation :</b> Écrasez les tomates à la main ou au presse-purée (évitez le mixeur qui brise les pépins). Ajoutez l'ail, le sel, le basilic et l'huile.
+      </p>
+    </div>
+
+    <!-- Sauce Blanche -->
+    <div class="bg-white rounded-2xl p-5 shadow-sm space-y-3">
+      <h2 class="text-xl font-bold text-slate-700 border-b pb-2 flex items-center gap-2">
+        🥛 Sauce Blanche Crème & Parmigiano
+      </h2>
+      <p class="text-xs text-slate-500">Base riche et onctueuse qui ne détrempe pas la pâte.</p>
+      <ul class="list-disc list-inside text-sm text-slate-600 space-y-1">
+        <li>120 g de crème fraîche épaisse (30% MG min.)</li>
+        <li>80 g de ricotta (ou mascarpone)</li>
+        <li>30 g de Parmigiano Reggiano râpé</li>
+        <li>1 petite gousse d'ail pressée</li>
+        <li>Sel, poivre noir et un filet d'huile d'olive</li>
+      </ul>
+      <p class="text-xs text-slate-500 italic mt-2">
+        <b>Préparation :</b> Fouettez la crème et la ricotta. Incorporez le parmesan, l'ail et l'assaisonnement. Laissez reposer 15 min au frais.
+      </p>
+    </div>
+
+    <!-- Suggestions de Fromages -->
+    <div class="bg-white rounded-2xl p-5 shadow-sm space-y-3">
+      <h2 class="text-xl font-bold text-amber-600 border-b pb-2 flex items-center gap-2">
+        🧀 Fromages de Recouvrement
+      </h2>
+      <div class="space-y-3 text-sm text-slate-600">
+        <div>
+          <b class="text-slate-800">1. Mozzarella en bloc :</b>
+          <p class="text-xs text-slate-500">Idéale pour les cuissons au four classique. <b>Choix nº 1 : Saputo Mozzarellissima</b> en bloc.</p>
+        </div>
+        <div class="bg-amber-50 p-2.5 rounded-lg border border-amber-100">
+          <p class="text-xs text-amber-800">💡 <b>Astuce :</b> Achetez toujours le fromage en bloc solide et râpez-le vous-même. Le fromage pré-râpé en sac contient de la fécule de maïs (anti-agglomérant) qui l'empêche de fondre uniformément.</p>
+        </div>
+        <div>
+          <b class="text-slate-800">2. Touche de finition :</b>
+          <p class="text-xs text-slate-500">Râpez du Parmigiano Reggiano ou Pecorino Romano directement sur la sauce avant la mozzarella ou en sortie de four.</p>
+        </div>
+        <div>
+          <b class="text-slate-800">3. Mozzarella di Bufala :</b>
+          <p class="text-xs text-slate-500">Plus riche et crémeuse. À ajouter idéalement en fin de cuisson ou déchirée crue sur la pizza sortie du four.</p>
+        </div>
+        <div>
+          <b class="text-slate-800">4. Mozzarella Fior di Latte :</b>
+          <p class="text-xs text-slate-500">Le choix classique. Coupez-la en bâtonnets et égouttez-la au moins 1 h avant cuisson pour éviter l'excès d'eau.</p>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <script>
+    function switchTab(tabName) {
+      const calcTab = document.getElementById('tab-calc');
+      const recipesTab = document.getElementById('tab-recipes');
+      const calcBtn = document.getElementById('tab-calc-btn');
+      const recipesBtn = document.getElementById('tab-recipes-btn');
+
+      if (tabName === 'calc') {
+        calcTab.classList.remove('hidden');
+        recipesTab.classList.add('hidden');
+        calcBtn.className = "flex-1 py-2 text-sm font-semibold rounded-lg bg-white shadow-sm text-slate-800";
+        recipesBtn.className = "flex-1 py-2 text-sm font-semibold rounded-lg text-slate-600 hover:text-slate-800";
+      } else {
+        calcTab.classList.add('hidden');
+        recipesTab.classList.remove('hidden');
+        recipesBtn.className = "flex-1 py-2 text-sm font-semibold rounded-lg bg-white shadow-sm text-slate-800";
+        calcBtn.className = "flex-1 py-2 text-sm font-semibold rounded-lg text-slate-600 hover:text-slate-800";
+      }
+    }
+
     function setHydra(valeur) {
       document.getElementById('hydratation').value = valeur;
       calculer();
@@ -128,10 +244,8 @@
       const s = 0.03; // Sel fixe à 3%
       const lFraicheTaux = 0.002; // Levure fraîche de référence à 0.2%
 
-      // Mise à jour du guide d'hydratation
       guiderHydratation(hValeur);
 
-      // Calcul du poids final par pâton
       const p = Math.round((basePoids * facteurEpaisseur) + ajustementManuel);
       document.getElementById('poids-final-paton').innerText = `Pâton : ${p} g`;
 
