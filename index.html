@@ -6,7 +6,6 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   
-  <!-- Désactivation du cache pour forcer la mise à jour immédiate -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
@@ -27,15 +26,45 @@
     <div>
       <label class="block text-sm font-medium text-slate-600">Taille de la pizza</label>
       <select id="taille-pizz" class="w-full mt-1 p-2 border rounded-lg text-lg font-semibold text-center bg-white" onchange="calculer()">
-        <option value="200">Petite — 10" (~200 g)</option>
-        <option value="250" selected>Moyenne — 12" (~250 g)</option>
-        <option value="320">Grande — 14" (~320 g)</option>
+        <option value="200">Petite — 10"</option>
+        <option value="250" selected>Moyenne — 12"</option>
+        <option value="320">Grande — 14"</option>
       </select>
     </div>
 
     <div>
-      <label class="block text-sm font-medium text-slate-600">Hydratation (%)</label>
-      <input type="number" id="hydratation" value="65" class="w-full mt-1 p-2 border rounded-lg text-lg font-semibold text-center" oninput="calculer()">
+      <label class="block text-sm font-medium text-slate-600">Style de croûte / Épaisseur</label>
+      <select id="epaisseur" class="w-full mt-1 p-2 border rounded-lg text-lg font-semibold text-center bg-white" onchange="calculer()">
+        <option value="0.90">Mince (-10%)</option>
+        <option value="1.00" selected>Standard (Napolitaine)</option>
+        <option value="1.15">Épaisse / Généreuse (+15%)</option>
+      </select>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-slate-600">Ajustement perso (g par pâton)</label>
+      <input type="number" id="ajustement" value="0" step="5" class="w-full mt-1 p-2 border rounded-lg text-lg font-semibold text-center" oninput="calculer()">
+    </div>
+
+    <!-- Section Hydratation Guidée -->
+    <div>
+      <div class="flex justify-between items-center">
+        <label class="block text-sm font-medium text-slate-600">Hydratation (%)</label>
+        <span id="hydra-badge" class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded font-medium">Standard</span>
+      </div>
+      
+      <input type="number" id="hydratation" value="65" min="50" max="90" class="w-full mt-1 p-2 border rounded-lg text-lg font-semibold text-center" oninput="calculer()">
+
+      <!-- Boutons de sélection rapide -->
+      <div class="grid grid-cols-4 gap-2 mt-2">
+        <button type="button" onclick="setHydra(60)" class="py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg border">60%</button>
+        <button type="button" onclick="setHydra(65)" class="py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg border">65%</button>
+        <button type="button" onclick="setHydra(70)" class="py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg border">70%</button>
+        <button type="button" onclick="setHydra(75)" class="py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg border">75%</button>
+      </div>
+
+      <!-- Description explicative dynamique -->
+      <p id="hydra-guide" class="text-xs text-slate-500 mt-2 bg-slate-50 p-2.5 rounded-lg border border-slate-100 leading-relaxed"></p>
     </div>
 
     <div>
@@ -51,22 +80,60 @@
   <div class="bg-blue-600 text-white rounded-2xl p-5 shadow-md space-y-3">
     <div class="flex justify-between items-center border-b border-blue-400 pb-2">
       <h2 class="text-lg font-bold">Recette</h2>
-      <span class="text-xs bg-blue-700 px-2 py-1 rounded text-blue-100">Sel fixe : 3%</span>
+      <span id="poids-final-paton" class="text-xs bg-blue-700 px-2 py-1 rounded text-blue-100">Pâton : 250 g</span>
     </div>
     <div class="flex justify-between text-lg"><span>Farine :</span><span id="res-farine" class="font-bold">0 g</span></div>
     <div class="flex justify-between text-lg"><span>Eau :</span><span id="res-eau" class="font-bold">0 g</span></div>
-    <div class="flex justify-between text-lg"><span>Sel :</span><span id="res-sel" class="font-bold">0 g</span></div>
+    <div class="flex justify-between text-lg"><span>Sel (3%) :</span><span id="res-sel" class="font-bold">0 g</span></div>
     <div class="flex justify-between text-lg"><span id="label-levure">Levure :</span><span id="res-levure" class="font-bold">0 g</span></div>
   </div>
 
   <script>
+    function setHydra(valeur) {
+      document.getElementById('hydratation').value = valeur;
+      calculer();
+    }
+
+    function guiderHydratation(hPourcent) {
+      const guideEl = document.getElementById('hydra-guide');
+      const badgeEl = document.getElementById('hydra-badge');
+
+      if (hPourcent <= 62) {
+        badgeEl.innerText = "Facile / Débutant";
+        badgeEl.className = "text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded font-medium";
+        guideEl.innerHTML = "💡 <b>Pâte ferme :</b> Très facile à pétrir et à étaler sans coller. Parfaite pour débuter ou pour un pétrissage rapide à la main.";
+      } else if (hPourcent <= 67) {
+        badgeEl.innerText = "Standard Napolitain";
+        badgeEl.className = "text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-medium";
+        guideEl.innerHTML = "💡 <b>Équilibre idéal :</b> La norme pour four à pizza haute température (400–500°C). Souple, alvéolée et facile à étaler.";
+      } else if (hPourcent <= 72) {
+        badgeEl.innerText = "Four Ménager";
+        badgeEl.className = "text-xs bg-orange-100 text-orange-800 px-2 py-0.5 rounded font-medium";
+        guideEl.innerHTML = "💡 <b>Pâte très souple :</b> Idéale pour la cuisson au four de cuisine traditionnel (250°C) afin de ne pas assécher la pâte. Demande un peu de farine à l'étalage.";
+      } else {
+        badgeEl.innerText = "Haute Hydratation";
+        badgeEl.className = "text-xs bg-purple-100 text-purple-800 px-2 py-0.5 rounded font-medium";
+        guideEl.innerHTML = "💡 <b>Pâte très collante :</b> Pour grands alvéoles (style Romana/Teglia). Nécessite une farine forte (W300+) et un bon coup de main.";
+      }
+    }
+
     function calculer() {
       const n = parseFloat(document.getElementById('patons').value) || 0;
-      const p = parseFloat(document.getElementById('taille-pizz').value) || 0;
-      const h = (parseFloat(document.getElementById('hydratation').value) || 0) / 100;
+      const basePoids = parseFloat(document.getElementById('taille-pizz').value) || 0;
+      const facteurEpaisseur = parseFloat(document.getElementById('epaisseur').value) || 1.0;
+      const ajustementManuel = parseFloat(document.getElementById('ajustement').value) || 0;
       
+      const hValeur = parseFloat(document.getElementById('hydratation').value) || 0;
+      const h = hValeur / 100;
       const s = 0.03; // Sel fixe à 3%
       const lFraicheTaux = 0.002; // Levure fraîche de référence à 0.2%
+
+      // Mise à jour du guide d'hydratation
+      guiderHydratation(hValeur);
+
+      // Calcul du poids final par pâton
+      const p = Math.round((basePoids * facteurEpaisseur) + ajustementManuel);
+      document.getElementById('poids-final-paton').innerText = `Pâton : ${p} g`;
 
       const typeLevure = document.getElementById('type-levure').value;
 
